@@ -189,7 +189,7 @@ export default function Login() {
                             disabled={loading}
                         />
                         <label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer select-none">
-                            Remember me for 30 days
+                            Remember me
                         </label>
                     </div>
 
