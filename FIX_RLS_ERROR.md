@@ -59,3 +59,4 @@ CREATE POLICY "Users can insert their own profile."
 2. Try signing up again - it should work now!
 3. The profile will be created automatically
 
+
