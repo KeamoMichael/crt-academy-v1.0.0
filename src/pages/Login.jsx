@@ -35,20 +35,19 @@ export default function Login() {
     }
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 auth-bg relative overflow-hidden">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 auth-bg relative overflow-hidden">
+            {/* Logo Section - Above the card */}
+            <div className="flex justify-center mb-8 relative z-10">
+                <img 
+                    src="/logo.jpg" 
+                    alt="CRT Academy Logo" 
+                    className="h-20 w-auto object-contain"
+                    style={{ maxHeight: '100px' }}
+                />
+            </div>
 
             {/* Glassmorphism Card */}
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-8 md:p-10 relative z-10 border border-white/50 transform transition-all hover:shadow-3xl">
-                {/* Logo Section */}
-                <div className="flex justify-center mb-8">
-                    <img 
-                        src="/logo.jpg" 
-                        alt="CRT Academy Logo" 
-                        className="h-16 w-auto object-contain"
-                        style={{ maxHeight: '80px' }}
-                    />
-                </div>
-
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center space-x-2">
@@ -60,7 +59,7 @@ export default function Login() {
                 {/* Welcome Section */}
                 <div className="mb-8">
                     <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">
-                        Welcome Back
+                        Welcome
                     </h1>
                     <p className="text-gray-600 text-sm">
                         Sign in to continue to CRT Academy
