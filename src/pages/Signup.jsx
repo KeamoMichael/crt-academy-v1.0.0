@@ -13,14 +13,14 @@ export default function Signup() {
         e.preventDefault();
         try {
             await signUp(email, password, username, symbol);
-            setSuccess("Account created successfully. Please verify your email.");
+            setSuccess("Account created! Check your email to verify.");
         } catch (err) {
             setError(err.message);
         }
     }
 
     return (
-        <div style={{ padding: "2rem" }}>
+        <div style={{ padding: 20 }}>
             <h1>Create Account</h1>
 
             <form onSubmit={handleSignup}>
@@ -31,8 +31,8 @@ export default function Signup() {
                 /><br />
 
                 <input
-                    placeholder="Password"
                     type="password"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 /><br />
