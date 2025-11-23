@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { signUp } from "../auth/signup";
 
 export default function Signup() {
@@ -6,54 +7,352 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [symbol, setSymbol] = useState("XAUUSD");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
 
     async function handleSignup(e) {
         e.preventDefault();
+        setLoading(true);
+        setError("");
+        setSuccess("");
+
+        // Basic validation
+        if (!email || !password || !username) {
+            setError("Please fill in all required fields");
+            setLoading(false);
+            return;
+        }
+
         try {
             await signUp(email, password, username, symbol);
             setSuccess("Account created! Check your email to verify.");
         } catch (err) {
-            setError(err.message);
+            setError(err.message || "Failed to create account. Please try again.");
+        } finally {
+            setLoading(false);
         }
     }
 
     return (
-        <div style={{ padding: 20 }}>
-            <h1>Create Account</h1>
+        <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 auth-bg relative overflow-hidden">
+            {/* Logo Section - Above the card */}
+            <div className="flex justify-center mb-12 relative z-10">
+                <img 
+                    src="/logo.png" 
+                    alt="CRT Academy Logo" 
+                    className="h-12 w-auto object-contain"
+                    style={{ maxHeight: '60px' }}
+                />
+            </div>
 
-            <form onSubmit={handleSignup}>
-                <input
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                /><br />
+            {/* Glassmorphism Card */}
+            <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-8 md:p-10 relative z-10 border border-white/50 transform transition-all hover:shadow-3xl">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                    <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#13b782' }}></div>
+                        <span className="text-sm font-medium text-gray-500">Create Account</span>
+                    </div>
+                </div>
 
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                /><br />
+                {/* Welcome Section */}
+                <div className="mb-8">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2 tracking-tight">
+                        Get Started
+                    </h1>
+                    <p className="text-gray-600 text-sm">
+                        Create your account to join CRT Academy
+                    </p>
+                </div>
 
-                <input
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                /><br />
+                <form onSubmit={handleSignup} className="space-y-5">
+                    {/* Email Input */}
+                    <div className="space-y-2">
+                        <label htmlFor="email" className="text-sm font-semibold text-gray-700 block">
+                            Email address
+                        </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                                </svg>
+                            </div>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="you@example.com"
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value);
+                                    setError("");
+                                    setSuccess("");
+                                }}
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = '#13b782';
+                                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(19, 183, 130, 0.2)';
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = '';
+                                    e.currentTarget.style.boxShadow = '';
+                                }}
+                                required
+                                autoComplete="email"
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
 
-                <select value={symbol} onChange={(e) => setSymbol(e.target.value)}>
-                    <option value="XAUUSD">XAUUSD</option>
-                    <option value="USTEC">USTEC</option>
-                    <option value="NAS100">NAS100</option>
-                </select><br />
+                    {/* Password Input */}
+                    <div className="space-y-2">
+                        <label htmlFor="password" className="text-sm font-semibold text-gray-700 block">
+                            Password
+                        </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setError("");
+                                    setSuccess("");
+                                }}
+                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 focus:ring-2 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = '#13b782';
+                                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(19, 183, 130, 0.2)';
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = '';
+                                    e.currentTarget.style.boxShadow = '';
+                                }}
+                                required
+                                autoComplete="new-password"
+                                disabled={loading}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                                tabIndex={-1}
+                            >
+                                {showPassword ? (
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.29 3.29m0 0A9.97 9.97 0 015.12 5.12m3.29 3.29L12 12m-3.59-3.59l3.29 3.29M12 12l3.29 3.29m0 0a9.97 9.97 0 011.563-3.029M15.71 15.71L12 12" />
+                                    </svg>
+                                ) : (
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
+                    </div>
 
-                <button type="submit">Sign Up</button>
+                    {/* Username Input */}
+                    <div className="space-y-2">
+                        <label htmlFor="username" className="text-sm font-semibold text-gray-700 block">
+                            Username
+                        </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <input
+                                id="username"
+                                type="text"
+                                placeholder="Choose a username"
+                                value={username}
+                                onChange={(e) => {
+                                    setUsername(e.target.value);
+                                    setError("");
+                                    setSuccess("");
+                                }}
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = '#13b782';
+                                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(19, 183, 130, 0.2)';
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = '';
+                                    e.currentTarget.style.boxShadow = '';
+                                }}
+                                required
+                                autoComplete="username"
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
 
-                {error && <p style={{ color: "red" }}>{error}</p>}
-                {success && <p style={{ color: "green" }}>{success}</p>}
-            </form>
+                    {/* Symbol Selection */}
+                    <div className="space-y-2">
+                        <label htmlFor="symbol" className="text-sm font-semibold text-gray-700 block">
+                            Trading Symbol
+                        </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            </div>
+                            <select
+                                id="symbol"
+                                value={symbol}
+                                onChange={(e) => setSymbol(e.target.value)}
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 appearance-none cursor-pointer"
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = '#13b782';
+                                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(19, 183, 130, 0.2)';
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = '';
+                                    e.currentTarget.style.boxShadow = '';
+                                }}
+                                disabled={loading}
+                                style={{ color: username ? '#111827' : '#9ca3af' }}
+                            >
+                                <option value="XAUUSD">XAUUSD</option>
+                                <option value="USTEC">USTEC</option>
+                                <option value="NAS100">NAS100</option>
+                            </select>
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Success Message */}
+                    {success && (
+                        <div className="p-4 rounded-xl bg-green-50 border border-green-200 flex items-start space-x-3">
+                            <svg className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className="text-green-600 text-sm font-medium">{success}</p>
+                        </div>
+                    )}
+
+                    {/* Error Message */}
+                    {error && (
+                        <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start space-x-3 animate-shake">
+                            <svg className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className="text-red-600 text-sm font-medium">{error}</p>
+                        </div>
+                    )}
+
+                    {/* Submit Button */}
+                    <button
+                        type="submit"
+                        disabled={loading || !email || !password || !username}
+                        className="w-full px-6 py-3.5 text-white font-semibold rounded-xl transition-all shadow-lg transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        style={{
+                            backgroundColor: '#13b782',
+                            boxShadow: '0 10px 15px -3px rgba(19, 183, 130, 0.3), 0 4px 6px -2px rgba(19, 183, 130, 0.2)'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!loading && email && password && username) {
+                                e.currentTarget.style.backgroundColor = '#10a372';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!loading && email && password && username) {
+                                e.currentTarget.style.backgroundColor = '#13b782';
+                            }
+                        }}
+                    >
+                        {loading ? (
+                            <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Creating account...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Sign Up</span>
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                </svg>
+                            </>
+                        )}
+                    </button>
+
+                    {/* Divider */}
+                    <div className="relative my-6">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-4 bg-white text-gray-500">Already have an account?</span>
+                        </div>
+                    </div>
+
+                    {/* Sign In Link */}
+                    <button
+                        type="button"
+                        onClick={() => navigate("/login")}
+                        className="w-full px-6 py-3.5 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                        disabled={loading}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#13b782';
+                            e.currentTarget.style.backgroundColor = 'rgba(19, 183, 130, 0.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '';
+                            e.currentTarget.style.backgroundColor = '';
+                        }}
+                    >
+                        Sign in
+                    </button>
+                </form>
+
+                {/* Footer */}
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                    <p className="text-center text-sm text-gray-500">
+                        By signing up, you agree to our{" "}
+                        <a href="#" className="font-medium underline" style={{ color: '#13b782' }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#10a372'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#13b782'}>
+                            Terms of Service
+                        </a>
+                        {" "}and{" "}
+                        <a href="#" className="font-medium underline" style={{ color: '#13b782' }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#10a372'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#13b782'}>
+                            Privacy Policy
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <style>{`
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+                .animate-shake {
+                    animation: shake 0.5s;
+                }
+            `}</style>
         </div>
     );
 }
