@@ -8,12 +8,18 @@ import { Onboarding } from './views/Onboarding';
 import { PlacementExam } from './views/PlacementExam';
 import { FinalExam } from './views/FinalExam';
 import { Dashboard } from './views/Dashboard';
+import { Settings } from './views/Settings';
 import { View, UserProgress } from './types';
 import { MAX_HEARTS, XP_PER_LESSON, XP_PER_PERFECT_LESSON } from './constants';
 import { CURRICULUM } from './services/curriculum';
+import { useAuth } from './src/auth/useAuth';
+import { Login } from './views/Login';
+import { Signup } from './views/Signup';
+import { supabase } from './src/lib/supabaseClient';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<View>(View.ONBOARDING);
+  const { user, loading: authLoading } = useAuth();
+  const [currentView, setCurrentView] = useState<View>(View.LOGIN);
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   
   const [userProgress, setUserProgress] = useState<UserProgress>({
@@ -28,25 +34,96 @@ const App: React.FC = () => {
       placementTaken: false
   });
 
+  // Check authentication and load user progress
   useEffect(() => {
-      const saved = localStorage.getItem('crt_academy_user_v2');
-      if (saved) {
-          const parsed = JSON.parse(saved);
-          // Migration checks
-          if (!parsed.examsPassed) parsed.examsPassed = [];
-          if (parsed.placementTaken === undefined) parsed.placementTaken = true; // Legacy users assumed taken
-          setUserProgress(parsed);
-          
-          // If returning user, go to Dashboard
-          if (parsed.symbol) {
-              setCurrentView(View.DASHBOARD);
+      if (authLoading) return;
+
+      if (!user) {
+          // Not authenticated - show login
+          setCurrentView(View.LOGIN);
+          return;
+      }
+
+      // User is authenticated - load their progress
+      loadUserProgress();
+  }, [user, authLoading]);
+
+  const loadUserProgress = async () => {
+      if (!user) return;
+
+      try {
+          // First, try to load from Supabase (user-specific)
+          const { data: profileData } = await supabase
+              .from('user_profile')
+              .select('symbol_locked')
+              .eq('user_id', user.id)
+              .single();
+
+          // Load from localStorage (for backward compatibility and local state)
+          const saved = localStorage.getItem(`crt_academy_user_v2_${user.id}`);
+          if (saved) {
+              const parsed = JSON.parse(saved);
+              if (!parsed.examsPassed) parsed.examsPassed = [];
+              if (parsed.placementTaken === undefined) parsed.placementTaken = true;
+              
+              // Use symbol from profile if available
+              if (profileData?.symbol_locked) {
+                  parsed.symbol = profileData.symbol_locked;
+              }
+              
+              setUserProgress(parsed);
+              
+              // If returning user, go to Dashboard
+              if (parsed.symbol) {
+                  setCurrentView(View.DASHBOARD);
+              } else {
+                  setCurrentView(View.ONBOARDING);
+              }
+          } else {
+              // New user or no saved progress
+              if (profileData?.symbol_locked) {
+                  setUserProgress(prev => ({ ...prev, symbol: profileData.symbol_locked }));
+                  setCurrentView(View.DASHBOARD);
+              } else {
+                  setCurrentView(View.ONBOARDING);
+              }
+          }
+      } catch (error) {
+          console.error('Error loading user progress:', error);
+          // Fallback to localStorage without user ID
+          const saved = localStorage.getItem('crt_academy_user_v2');
+          if (saved) {
+              const parsed = JSON.parse(saved);
+              setUserProgress(parsed);
+              if (parsed.symbol) {
+                  setCurrentView(View.DASHBOARD);
+              }
           }
       }
-  }, []);
+  };
 
   const saveProgress = (progress: UserProgress) => {
       setUserProgress(progress);
-      localStorage.setItem('crt_academy_user_v2', JSON.stringify(progress));
+      
+      // Save to localStorage with user ID for user-specific storage
+      if (user) {
+          localStorage.setItem(`crt_academy_user_v2_${user.id}`, JSON.stringify(progress));
+      } else {
+          // Fallback for non-authenticated users
+          localStorage.setItem('crt_academy_user_v2', JSON.stringify(progress));
+      }
+
+      // Optionally sync to Supabase (you can create a user_progress table if needed)
+      // For now, we'll just update the symbol in user_profile
+      if (user && progress.symbol) {
+          supabase
+              .from('user_profile')
+              .update({ symbol_locked: progress.symbol })
+              .eq('user_id', user.id)
+              .then(({ error }) => {
+                  if (error) console.error('Error syncing progress:', error);
+              });
+      }
   };
 
   const handleNavigate = (view: View) => {
@@ -179,12 +256,18 @@ const App: React.FC = () => {
 
   const renderView = () => {
     switch (currentView) {
+      case View.LOGIN:
+          return <Login onNavigate={handleNavigate} />;
+      case View.SIGNUP:
+          return <Signup onNavigate={handleNavigate} />;
       case View.ONBOARDING:
           return <Onboarding onComplete={handleOnboardingComplete} />;
       case View.PLACEMENT:
           return <PlacementExam onComplete={handlePlacementComplete} />;
       case View.DASHBOARD:
           return <Dashboard userProgress={userProgress} onNavigate={handleNavigate} />;
+      case View.SETTINGS:
+          return <Settings onNavigate={handleNavigate} />;
       case View.VAULT:
         return <TheoryVault 
                   completedLessons={userProgress.completedLessons} 
@@ -209,8 +292,23 @@ const App: React.FC = () => {
     }
   };
 
+  // Show login/signup without layout
+  if (currentView === View.LOGIN || currentView === View.SIGNUP) {
+      return renderView();
+  }
+
+  // Show onboarding, placement, and final exam without layout
   if (currentView === View.ONBOARDING || currentView === View.PLACEMENT || currentView === View.FINAL_EXAM) {
       return renderView();
+  }
+
+  // Show authenticated views with layout
+  if (authLoading) {
+      return (
+          <div className="min-h-screen flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+      );
   }
 
   return (
@@ -218,6 +316,7 @@ const App: React.FC = () => {
         currentView={currentView} 
         onNavigate={handleNavigate} 
         stats={{ hearts: userProgress.hearts, xp: userProgress.xp, streak: userProgress.streak }}
+        user={user}
     >
         {renderView()}
     </Layout>

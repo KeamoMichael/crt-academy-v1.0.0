@@ -1,8 +1,11 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from '../types';
-import { Book, Activity, Terminal, Heart, Zap, Trophy, LayoutDashboard } from 'lucide-react';
+import { Book, Activity, Terminal, Heart, Zap, Trophy, LayoutDashboard, Settings as SettingsIcon } from 'lucide-react';
 import { APP_NAME } from '../constants';
+import { supabase } from '../src/lib/supabaseClient';
+import { signOut } from '../src/auth/logout';
+import type { User } from '@supabase/supabase-js';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,6 +16,7 @@ interface LayoutProps {
     xp: number;
     streak: number;
   };
+  user: User | null;
 }
 
 const Logo = () => (
@@ -23,7 +27,26 @@ const Logo = () => (
   </svg>
 );
 
-export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate, stats }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigate, stats, user }) => {
+  const [username, setUsername] = useState<string | null>(null);
+  const [profileIcon, setProfileIcon] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from('user_profile')
+        .select('username, profile_icon')
+        .eq('user_id', user.id)
+        .single()
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setUsername(data.username);
+            setProfileIcon(data.profile_icon);
+          }
+        });
+    }
+  }, [user]);
+
   const navItems = [
     { id: View.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
     { id: View.VAULT, label: 'Theory Vault', icon: Book },
@@ -64,7 +87,48 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
             })}
         </nav>
         
-        <div className="p-4 border-t border-slate-100">
+        <div className="p-4 border-t border-slate-100 space-y-3">
+             {/* User Profile Section */}
+             {user && (
+                 <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm mb-3">
+                     <div className="flex items-center gap-3 mb-3">
+                         {profileIcon ? (
+                             <img
+                                 src={profileIcon}
+                                 alt="Profile"
+                                 className="w-10 h-10 rounded-full object-cover border-2 border-slate-300"
+                             />
+                         ) : (
+                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center border-2 border-slate-300">
+                                 <span className="text-sm font-bold text-white">
+                                     {username ? username.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+                                 </span>
+                             </div>
+                         )}
+                         <div className="flex-1 min-w-0">
+                             <p className="text-sm font-bold text-slate-900 truncate">
+                                 {username || user.email?.split('@')[0] || 'User'}
+                             </p>
+                             <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                         </div>
+                     </div>
+                     <button
+                         onClick={() => onNavigate(View.SETTINGS)}
+                         className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors"
+                     >
+                         <SettingsIcon size={16} />
+                         <span>Settings</span>
+                     </button>
+                     <button
+                         onClick={signOut}
+                         className="w-full mt-2 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                     >
+                         Logout
+                     </button>
+                 </div>
+             )}
+             
+             {/* XP Progress */}
              <div className="bg-white rounded-xl p-4 text-xs text-slate-500 border border-slate-200 shadow-sm">
                  <div className="flex items-center justify-between mb-2">
                     <h5 className="text-slate-800 font-bold">CRT Apprentice</h5>

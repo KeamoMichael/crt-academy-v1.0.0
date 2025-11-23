@@ -7,7 +7,9 @@ export enum View {
   SETTINGS = 'SETTINGS',
   ONBOARDING = 'ONBOARDING',
   PLACEMENT = 'PLACEMENT',
-  FINAL_EXAM = 'FINAL_EXAM'
+  FINAL_EXAM = 'FINAL_EXAM',
+  LOGIN = 'LOGIN',
+  SIGNUP = 'SIGNUP'
 }
 
 export type Timeframe = '1m' | '3m' | '5m' | '15m' | '30m' | '1H' | '2H' | '4H' | '1D' | '1W' | '1M';
