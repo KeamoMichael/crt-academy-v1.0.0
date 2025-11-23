@@ -1,7 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Lesson, QuizQuestion } from '../types';
-import { CheckCircle, XCircle, ArrowRight, HeartCrack, Trophy, AlertTriangle, CheckSquare, Circle } from 'lucide-react';
+import { CheckCircle, XCircle, ArrowRight, HeartCrack, Trophy, AlertTriangle, CheckSquare, Circle, Film, Target } from 'lucide-react';
+import { getClipsForLesson, ClipMetadata } from '../services/curriculumClips';
+import { BarReplay } from './charts/BarReplay';
+import { RangeDrill } from './interactive/RangeDrill';
+import { ModelIDDrill } from './interactive/ModelIDDrill';
+import { generateCurriculumPattern, generateSeededCandles } from '../services/candleDataGenerator';
+import { Candle, Timeframe } from '../types';
 
 interface LessonPlayerProps {
   lesson: Lesson;
@@ -17,6 +23,8 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({ lesson, onComplete, 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [clips, setClips] = useState<ClipMetadata[]>([]);
+  const [clipCandles, setClipCandles] = useState<Record<string, Candle[]>>({});
   
   useEffect(() => {
       const qList = lesson.questions || (lesson.quiz ? [lesson.quiz] : []);
@@ -24,6 +32,35 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({ lesson, onComplete, 
       if (!lesson.content && qList.length > 0) {
           setPhase('QUIZ');
       }
+      
+      // Load clips for this lesson
+      const lessonClips = getClipsForLesson(lesson.id);
+      setClips(lessonClips);
+      
+      // Generate candle data for each clip
+      const candlesMap: Record<string, Candle[]> = {};
+      lessonClips.forEach(clip => {
+          if (clip.replaySeed) {
+              candlesMap[clip.id] = generateSeededCandles(
+                  30, 
+                  clip.timeframe as Timeframe, 
+                  clip.replaySeed
+              );
+          } else {
+              // Determine pattern from clip description or use default
+              let pattern: 'model-1' | 'turtle-soup' | 'crt-ote' | 'three-candles' | 'ranging' = 'ranging';
+              if (clip.description.toLowerCase().includes('model')) pattern = 'model-1';
+              else if (clip.description.toLowerCase().includes('turtle')) pattern = 'turtle-soup';
+              else if (clip.description.toLowerCase().includes('three')) pattern = 'three-candles';
+              else if (clip.description.toLowerCase().includes('ote')) pattern = 'crt-ote';
+              
+              candlesMap[clip.id] = generateCurriculumPattern(
+                  pattern,
+                  clip.timeframe as Timeframe
+              );
+          }
+      });
+      setClipCandles(candlesMap);
   }, [lesson]);
 
   // Proceed to next question or report
@@ -228,6 +265,82 @@ export const LessonPlayer: React.FC<LessonPlayerProps> = ({ lesson, onComplete, 
         </div>
       </div>
 
+      {/* Curriculum Clips - Demo Clips First */}
+      {clips.filter(c => c.clipPurpose === 'demo').map((clip) => {
+          const candles = clipCandles[clip.id] || [];
+          if (candles.length === 0) return null;
+          
+          return (
+              <div key={clip.id} className="my-8 bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden">
+                  <div className="p-4 bg-blue-50 border-b border-slate-200 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                          <Film className="text-blue-600" size={20} />
+                          <div>
+                              <div className="text-sm font-bold text-slate-900">Demo: {clip.description}</div>
+                              <div className="text-xs text-slate-500">Source: {clip.sourcePageOrSlide}</div>
+                          </div>
+                      </div>
+                      <span className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded">DEMO</span>
+                  </div>
+                  <div className="p-6">
+                      <BarReplay
+                          candles={candles}
+                          timeframe={clip.timeframe as Timeframe}
+                          speed={2}
+                          allowRewind={clip.interactionPolicy?.allowRewind ?? true}
+                      />
+                  </div>
+              </div>
+          );
+      })}
+
+      {/* Practice Clips */}
+      {clips.filter(c => c.clipPurpose === 'practice').map((clip) => {
+          const candles = clipCandles[clip.id] || [];
+          if (candles.length === 0) return null;
+          
+          return (
+              <div key={clip.id} className="my-8 bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden">
+                  <div className="p-4 bg-emerald-50 border-b border-slate-200 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                          <Target className="text-emerald-600" size={20} />
+                          <div>
+                              <div className="text-sm font-bold text-slate-900">Practice: {clip.description}</div>
+                              <div className="text-xs text-slate-500">Source: {clip.sourcePageOrSlide}</div>
+                          </div>
+                      </div>
+                      <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-2 py-1 rounded">PRACTICE</span>
+                  </div>
+                  <div className="p-6">
+                      {clip.description.toLowerCase().includes('range') && (
+                          <RangeDrill
+                              onComplete={(score) => {
+                                  if (score === 100) {
+                                      // Award XP or handle success
+                                  }
+                              }}
+                              onHeartLoss={onHeartLoss}
+                              timeframe={clip.timeframe as Timeframe}
+                          />
+                      )}
+                      {clip.description.toLowerCase().includes('model') && (
+                          <ModelIDDrill
+                              onComplete={(score) => {
+                                  if (score === 100) {
+                                      // Award XP or handle success
+                                  }
+                              }}
+                              onHeartLoss={onHeartLoss}
+                              timeframe={clip.timeframe as Timeframe}
+                              clipSeed={clip.replaySeed}
+                          />
+                      )}
+                  </div>
+              </div>
+          );
+      })}
+
+      {/* Legacy Interactive Module (if componentId exists) */}
       {lesson.componentId && renderInteractive && (
         <div className="my-8 bg-white rounded-xl border border-slate-200 shadow-lg overflow-hidden">
            <div className="p-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-widest flex justify-between items-center">

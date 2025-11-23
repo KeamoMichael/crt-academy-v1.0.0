@@ -1,12 +1,18 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
-import { BookOpen, Box, ChevronRight, ArrowLeft, CheckCircle2, Lock, Play, TrendingUp, BarChart2, Heart, Trophy, ShieldAlert, Calculator, Divide, Plus, Equal, AlertOctagon, XCircle, Calendar, Clock, MousePointer2, ZoomIn, ArrowRight } from 'lucide-react';
+import { BookOpen, Box, ChevronRight, ArrowLeft, CheckCircle2, Lock, Play, TrendingUp, BarChart2, Heart, Trophy, ShieldAlert, Calculator, Divide, Plus, Equal, AlertOctagon, XCircle, Calendar, Clock, MousePointer2, ZoomIn, ArrowRight, Film, Target } from 'lucide-react';
 import { FractalPeeler } from './FractalPeeler';
 import { CURRICULUM } from '../services/curriculum';
 import { LessonPlayer } from '../components/LessonPlayer';
 import { WEEKLY_PROFILES, XP_PER_LESSON } from '../constants';
 import { Lesson, Level } from '../types';
+import { getClipsForLesson, ClipMetadata } from '../services/curriculumClips';
+import { BarReplay } from '../components/charts/BarReplay';
+import { RangeDrill } from '../components/interactive/RangeDrill';
+import { ModelIDDrill } from '../components/interactive/ModelIDDrill';
+import { generateCurriculumPattern, generateSeededCandles } from '../services/candleDataGenerator';
+import { Candle, Timeframe } from '../types';
 
 // --- INTERACTIVE VISUALIZERS ---
 
