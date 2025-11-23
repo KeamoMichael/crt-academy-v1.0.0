@@ -42,7 +42,7 @@ export default function Login() {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#13b782' }}></div>
                         <span className="text-sm font-medium text-gray-500">Secure Login</span>
                     </div>
                 </div>
@@ -78,7 +78,15 @@ export default function Login() {
                                     setEmail(e.target.value);
                                     setError("");
                                 }}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = '#13b782';
+                                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(19, 183, 130, 0.2)';
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = '';
+                                    e.currentTarget.style.boxShadow = '';
+                                }}
                                 required
                                 autoComplete="email"
                                 disabled={loading}
@@ -98,7 +106,10 @@ export default function Login() {
                                     // TODO: Implement forgot password functionality
                                     alert("Forgot password feature coming soon!");
                                 }}
-                                className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
+                                className="text-sm font-medium transition-colors"
+                                style={{ color: '#13b782' }}
+                                onMouseEnter={(e) => e.currentTarget.style.color = '#10a372'}
+                                onMouseLeave={(e) => e.currentTarget.style.color = '#13b782'}
                             >
                                 Forgot password?
                             </button>
@@ -118,7 +129,15 @@ export default function Login() {
                                     setPassword(e.target.value);
                                     setError("");
                                 }}
-                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 focus:ring-2 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = '#13b782';
+                                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(19, 183, 130, 0.2)';
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = '';
+                                    e.currentTarget.style.boxShadow = '';
+                                }}
                                 required
                                 autoComplete="current-password"
                                 disabled={loading}
@@ -150,7 +169,14 @@ export default function Login() {
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500 focus:ring-2 cursor-pointer"
+                            className="w-4 h-4 rounded border-gray-300 focus:ring-2 cursor-pointer"
+                            style={{ accentColor: '#13b782' }}
+                            onFocus={(e) => {
+                                e.target.style.boxShadow = '0 0 0 2px rgba(19, 183, 130, 0.2)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.boxShadow = '';
+                            }}
                             disabled={loading}
                         />
                         <label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer select-none">
@@ -220,7 +246,15 @@ export default function Login() {
                     <button
                         type="button"
                         onClick={() => navigate("/signup")}
-                        className="w-full px-6 py-3.5 bg-white border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                        className="w-full px-6 py-3.5 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#13b782';
+                            e.currentTarget.style.backgroundColor = 'rgba(19, 183, 130, 0.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '';
+                            e.currentTarget.style.backgroundColor = '';
+                        }}
                         disabled={loading}
                     >
                         Create an account
@@ -231,11 +265,15 @@ export default function Login() {
                 <div className="mt-8 pt-6 border-t border-gray-100">
                     <p className="text-center text-sm text-gray-500">
                         By signing in, you agree to our{" "}
-                        <a href="#" className="text-green-600 hover:text-green-700 font-medium underline">
+                        <a href="#" className="font-medium underline" style={{ color: '#13b782' }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#10a372'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#13b782'}>
                             Terms of Service
                         </a>
                         {" "}and{" "}
-                        <a href="#" className="text-green-600 hover:text-green-700 font-medium underline">
+                        <a href="#" className="font-medium underline" style={{ color: '#13b782' }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#10a372'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#13b782'}>
                             Privacy Policy
                         </a>
                     </p>
