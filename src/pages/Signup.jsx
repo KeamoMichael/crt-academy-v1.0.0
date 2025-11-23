@@ -28,10 +28,33 @@ export default function Signup() {
         }
 
         try {
-            await signUp(email, password, username, symbol);
-            setSuccess("Account created! Check your email to verify.");
+            const result = await signUp(email, password, username, symbol);
+            
+            // Check if user was created and signed in
+            if (result?.session) {
+                // User is signed in (email confirmation disabled)
+                setSuccess("Account created successfully! Redirecting to dashboard...");
+                setTimeout(() => navigate("/dashboard"), 1500);
+            } else if (result?.user) {
+                // User created but not signed in (shouldn't happen if confirmation is disabled)
+                setSuccess("Account created! You can now sign in.");
+                setTimeout(() => navigate("/login"), 2000);
+            } else {
+                setSuccess("Account created successfully!");
+            }
         } catch (err) {
-            setError(err.message || "Failed to create account. Please try again.");
+            // Provide more helpful error messages
+            let errorMessage = err.message || "Failed to create account. Please try again.";
+            
+            if (errorMessage.includes('email') && errorMessage.includes('send')) {
+                errorMessage = "Account may have been created, but we couldn't send the confirmation email. Please try logging in, or contact support if email confirmation is required.";
+            } else if (errorMessage.includes('already registered') || errorMessage.includes('already exists')) {
+                errorMessage = "An account with this email already exists. Please try logging in instead.";
+            } else if (errorMessage.includes('password')) {
+                errorMessage = "Password must be at least 6 characters long.";
+            }
+            
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }

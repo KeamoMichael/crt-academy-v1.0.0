@@ -17,7 +17,24 @@ export async function signUp(email, password, username, symbolLocked) {
     });
 
     if (authError) {
-        console.error(authError);
+        console.error('Signup error:', authError);
+        
+        // Check if it's an email sending error
+        if (authError.message && (
+            authError.message.includes('email') && 
+            authError.message.includes('send')
+        )) {
+            // If user was created but email failed, still allow signup
+            // The user account exists, they just need to verify email later
+            if (authData?.user) {
+                console.warn('User created but email confirmation failed. User can still sign in if email confirmation is disabled.');
+                // Return the data anyway - user account was created
+                return authData;
+            }
+            // If user creation also failed, throw a more helpful error
+            throw new Error('Failed to create account. Please check your email address and try again. If the problem persists, email confirmation may not be configured.');
+        }
+        
         throw authError;
     }
 
