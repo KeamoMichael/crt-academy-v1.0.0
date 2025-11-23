@@ -5,6 +5,7 @@ import { signOut } from "../auth/logout";
 import { supabase } from "../lib/supabaseClient";
 import { Book, Activity, Terminal, Zap, Play } from "lucide-react";
 import { CURRICULUM } from "../../services/curriculum";
+import { ProfileIcon } from "../../components/ProfileIcon";
 
 export default function Dashboard() {
     const { user, loading } = useAuth();
@@ -84,19 +85,13 @@ export default function Dashboard() {
                 {/* Header with Settings */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div className="flex items-center gap-4">
-                        {profileIcon ? (
-                            <img
-                                src={profileIcon}
-                                alt="Profile"
-                                className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
-                            />
-                        ) : (
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center border-2 border-gray-300">
-                                <span className="text-xl font-bold text-white">
-                                    {username ? username.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
-                                </span>
-                            </div>
-                        )}
+                        <ProfileIcon 
+                            iconUrl={profileIcon}
+                            username={username}
+                            email={user.email}
+                            size="lg"
+                            className="border-2 border-gray-300"
+                        />
                         <div>
                             <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
                                 Welcome back, {username || "Trader"}.

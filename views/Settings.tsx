@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from './../src/auth/useAuth';
 import { updateEmail } from './../src/auth/updateEmail';
 import { updatePassword } from './../src/auth/updatePassword';
-import { updateUsername, uploadProfileIcon } from './../src/auth/updateProfile';
+import { updateUsername, uploadProfileIcon, updateProfileIcon } from './../src/auth/updateProfile';
 import { supabase } from './../src/lib/supabaseClient';
 import { View } from '../types';
+import { BUILT_IN_PROFILE_ICONS, getIconUrl, isBuiltInIcon, extractIconId, getIconById } from '../src/utils/profileIcons';
 
 interface SettingsProps {
     onNavigate: (view: View) => void;
@@ -16,6 +17,8 @@ export const Settings: React.FC<SettingsProps> = ({ onNavigate }) => {
     const [newUsername, setNewUsername] = useState("");
     const [profileIcon, setProfileIcon] = useState<string | null>(null);
     const [profileIconPreview, setProfileIconPreview] = useState<string | null>(null);
+    const [selectedBuiltInIcon, setSelectedBuiltInIcon] = useState<string | null>(null);
+    const [showIconPicker, setShowIconPicker] = useState(false);
     const [email, setEmail] = useState("");
     const [newEmail, setNewEmail] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -46,6 +49,10 @@ export const Settings: React.FC<SettingsProps> = ({ onNavigate }) => {
                         setNewUsername(data.username || "");
                         setProfileIcon(data.profile_icon);
                         setProfileIconPreview(data.profile_icon);
+                        // Check if it's a built-in icon
+                        if (isBuiltInIcon(data.profile_icon)) {
+                            setSelectedBuiltInIcon(extractIconId(data.profile_icon) || null);
+                        }
                     }
                     setEmail(user.email || "");
                     setNewEmail(user.email || "");
@@ -195,9 +202,54 @@ export const Settings: React.FC<SettingsProps> = ({ onNavigate }) => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setProfileIconPreview(reader.result as string);
+                setSelectedBuiltInIcon(null); // Clear built-in selection when uploading
             };
             reader.readAsDataURL(file);
         }
+    };
+
+    const handleBuiltInIconSelect = async (iconId: string) => {
+        setSelectedBuiltInIcon(iconId);
+        const iconUrl = getIconUrl(iconId);
+        setProfileIconPreview(iconUrl);
+        
+        // Save immediately
+        if (!user) return;
+        try {
+            setIconLoading(true);
+            await updateProfileIcon(user.id, iconUrl);
+            setProfileIcon(iconUrl);
+            setSuccessMessage("Profile icon updated successfully!");
+            setShowIconPicker(false);
+        } catch (err: any) {
+            setIconError(err.message || "Failed to update profile icon");
+        } finally {
+            setIconLoading(false);
+        }
+    };
+
+    const renderIconPreview = () => {
+        if (isBuiltInIcon(profileIconPreview)) {
+            const iconId = extractIconId(profileIconPreview);
+            const icon = iconId ? getIconById(iconId) : null;
+            if (icon) {
+                return (
+                    <div className="w-full h-full flex items-center justify-center">
+                        {icon.component}
+                    </div>
+                );
+            }
+        }
+        if (profileIconPreview && !isBuiltInIcon(profileIconPreview)) {
+            return <img src={profileIconPreview} alt="Profile" className="w-full h-full object-cover" />;
+        }
+        return (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600">
+                <span className="text-4xl font-bold text-white">
+                    {username ? username.charAt(0).toUpperCase() : email.charAt(0).toUpperCase()}
+                </span>
+            </div>
+        );
     };
 
     if (loading) {
@@ -232,39 +284,74 @@ export const Settings: React.FC<SettingsProps> = ({ onNavigate }) => {
             {/* Profile Icon */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                 <h2 className="text-2xl font-semibold text-slate-900 mb-4">Profile Icon</h2>
-                <div className="flex items-start space-x-6">
+                <div className="flex flex-col lg:flex-row items-start space-y-6 lg:space-y-0 lg:space-x-6">
                     <div className="flex-shrink-0">
-                        <div className="w-32 h-32 rounded-full overflow-hidden bg-slate-200 border-4 border-slate-300 flex items-center justify-center">
-                            {profileIconPreview ? (
-                                <img src={profileIconPreview} alt="Profile" className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600">
-                                    <span className="text-4xl font-bold text-white">
-                                        {username ? username.charAt(0).toUpperCase() : email.charAt(0).toUpperCase()}
-                                    </span>
+                        <div className="w-32 h-32 rounded-full overflow-hidden bg-slate-200 border-4 border-slate-300 flex items-center justify-center shadow-lg">
+                            {renderIconPreview()}
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full">
+                        {/* Built-in Icons Section */}
+                        <div className="mb-6">
+                            <div className="flex items-center justify-between mb-3">
+                                <label className="text-sm font-semibold text-slate-700">Choose Built-in Icon</label>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowIconPicker(!showIconPicker)}
+                                    className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+                                >
+                                    {showIconPicker ? 'Hide Icons' : 'Show Icons'}
+                                </button>
+                            </div>
+                            {showIconPicker && (
+                                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200 max-h-64 overflow-y-auto">
+                                    {BUILT_IN_PROFILE_ICONS.map((icon) => (
+                                        <button
+                                            key={icon.id}
+                                            type="button"
+                                            onClick={() => handleBuiltInIconSelect(icon.id)}
+                                            className={`w-12 h-12 rounded-full overflow-hidden border-2 transition-all hover:scale-110 ${
+                                                selectedBuiltInIcon === icon.id
+                                                    ? 'border-emerald-500 ring-2 ring-emerald-200'
+                                                    : 'border-slate-300 hover:border-emerald-400'
+                                            }`}
+                                            title={icon.name}
+                                            disabled={iconLoading}
+                                        >
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                {icon.component}
+                                            </div>
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
-                    </div>
-                    <div className="flex-1">
-                        <form onSubmit={handleIconUpload} className="space-y-4">
-                            <input
-                                id="profile-icon-input"
-                                type="file"
-                                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                                onChange={handleFileSelect}
-                                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
-                                disabled={iconLoading}
-                            />
-                            {iconError && <p className="text-red-600 text-sm">{iconError}</p>}
-                            <button
-                                type="submit"
-                                disabled={iconLoading}
-                                className="px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50"
-                            >
-                                {iconLoading ? "Uploading..." : "Upload Icon"}
-                            </button>
-                        </form>
+
+                        {/* Upload Custom Icon */}
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Or Upload Custom Icon</label>
+                            <form onSubmit={handleIconUpload} className="space-y-4">
+                                <input
+                                    id="profile-icon-input"
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                    onChange={handleFileSelect}
+                                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
+                                    disabled={iconLoading}
+                                />
+                                {iconError && <p className="text-red-600 text-sm">{iconError}</p>}
+                                <button
+                                    type="submit"
+                                    disabled={iconLoading || !document.getElementById('profile-icon-input')?.files?.[0]}
+                                    className="px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {iconLoading ? "Uploading..." : "Upload Custom Icon"}
+                                </button>
+                            </form>
+                            <p className="text-xs text-slate-500 mt-2">
+                                Supported formats: JPEG, PNG, GIF, WebP. Max size: 5MB
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,7 @@ import { APP_NAME } from '../constants';
 import { supabase } from '../src/lib/supabaseClient';
 import { signOut } from '../src/auth/logout';
 import type { User } from '@supabase/supabase-js';
+import { ProfileIcon } from './ProfileIcon';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -92,19 +93,13 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onNavigat
              {user && (
                  <div className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm mb-3">
                      <div className="flex items-center gap-3 mb-3">
-                         {profileIcon ? (
-                             <img
-                                 src={profileIcon}
-                                 alt="Profile"
-                                 className="w-10 h-10 rounded-full object-cover border-2 border-slate-300"
-                             />
-                         ) : (
-                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center border-2 border-slate-300">
-                                 <span className="text-sm font-bold text-white">
-                                     {username ? username.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
-                                 </span>
-                             </div>
-                         )}
+                         <ProfileIcon 
+                             iconUrl={profileIcon}
+                             username={username}
+                             email={user.email}
+                             size="md"
+                             className="border-2 border-slate-300"
+                         />
                          <div className="flex-1 min-w-0">
                              <p className="text-sm font-bold text-slate-900 truncate">
                                  {username || user.email?.split('@')[0] || 'User'}
