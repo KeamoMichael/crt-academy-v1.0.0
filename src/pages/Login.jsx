@@ -37,12 +37,12 @@ export default function Login() {
     return (
         <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 auth-bg relative overflow-hidden">
             {/* Logo Section - Above the card */}
-            <div className="flex justify-center mb-8 relative z-10">
+            <div className="flex justify-center mb-12 relative z-10">
                 <img 
-                    src="/logo.jpg" 
+                    src="/logo.png" 
                     alt="CRT Academy Logo" 
-                    className="h-20 w-auto object-contain"
-                    style={{ maxHeight: '100px' }}
+                    className="h-12 w-auto object-contain"
+                    style={{ maxHeight: '60px' }}
                 />
             </div>
 
