@@ -172,7 +172,21 @@ export default function Login() {
                     <button
                         type="submit"
                         disabled={loading || !email || !password}
-                        className="w-full px-6 py-3.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl transition-all shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-green-600 disabled:hover:to-green-700 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
+                        className="w-full px-6 py-3.5 text-white font-semibold rounded-xl transition-all shadow-lg transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        style={{
+                            backgroundColor: '#13b782',
+                            boxShadow: '0 10px 15px -3px rgba(19, 183, 130, 0.3), 0 4px 6px -2px rgba(19, 183, 130, 0.2)'
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!loading && email && password) {
+                                e.currentTarget.style.backgroundColor = '#10a372';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            if (!loading && email && password) {
+                                e.currentTarget.style.backgroundColor = '#13b782';
+                            }
+                        }}
                     >
                         {loading ? (
                             <>
