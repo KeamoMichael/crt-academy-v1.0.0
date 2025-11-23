@@ -2,9 +2,17 @@ import { supabase } from '../lib/supabaseClient';
 
 export async function signUp(email, password, username, symbolLocked) {
     // 1. Create authentication user
+    // The emailRedirectTo option allows users to be redirected to your app after confirming email
     const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+            data: {
+                username: username,
+                symbol_locked: symbolLocked
+            }
+        }
     });
 
     if (authError) {

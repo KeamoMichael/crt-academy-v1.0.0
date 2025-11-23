@@ -36,19 +36,13 @@ export default function Login() {
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center p-4 auth-bg relative overflow-hidden">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-                <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-                <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
-            </div>
 
             {/* Glassmorphism Card */}
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-8 md:p-10 relative z-10 border border-white/50 transform transition-all hover:shadow-3xl">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <span className="text-sm font-medium text-gray-500">Secure Login</span>
                     </div>
                 </div>
@@ -84,7 +78,7 @@ export default function Login() {
                                     setEmail(e.target.value);
                                     setError("");
                                 }}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
                                 required
                                 autoComplete="email"
                                 disabled={loading}
@@ -104,7 +98,7 @@ export default function Login() {
                                     // TODO: Implement forgot password functionality
                                     alert("Forgot password feature coming soon!");
                                 }}
-                                className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                                className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
                             >
                                 Forgot password?
                             </button>
@@ -124,7 +118,7 @@ export default function Login() {
                                     setPassword(e.target.value);
                                     setError("");
                                 }}
-                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
+                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all bg-gray-50/80 hover:bg-gray-50 placeholder:text-gray-400"
                                 required
                                 autoComplete="current-password"
                                 disabled={loading}
@@ -156,7 +150,7 @@ export default function Login() {
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 focus:ring-2 cursor-pointer"
+                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500 focus:ring-2 cursor-pointer"
                             disabled={loading}
                         />
                         <label htmlFor="remember" className="text-sm text-gray-600 cursor-pointer select-none">
@@ -178,7 +172,7 @@ export default function Login() {
                     <button
                         type="submit"
                         disabled={loading || !email || !password}
-                        className="w-full px-6 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-600 disabled:hover:to-blue-700 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
+                        className="w-full px-6 py-3.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-xl transition-all shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-green-600 disabled:hover:to-green-700 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2"
                     >
                         {loading ? (
                             <>
@@ -212,7 +206,7 @@ export default function Login() {
                     <button
                         type="button"
                         onClick={() => navigate("/signup")}
-                        className="w-full px-6 py-3.5 bg-white border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 text-gray-700 font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                        className="w-full px-6 py-3.5 bg-white border-2 border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 font-semibold rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                         disabled={loading}
                     >
                         Create an account
@@ -223,11 +217,11 @@ export default function Login() {
                 <div className="mt-8 pt-6 border-t border-gray-100">
                     <p className="text-center text-sm text-gray-500">
                         By signing in, you agree to our{" "}
-                        <a href="#" className="text-blue-600 hover:text-blue-700 font-medium underline">
+                        <a href="#" className="text-green-600 hover:text-green-700 font-medium underline">
                             Terms of Service
                         </a>
                         {" "}and{" "}
-                        <a href="#" className="text-blue-600 hover:text-blue-700 font-medium underline">
+                        <a href="#" className="text-green-600 hover:text-green-700 font-medium underline">
                             Privacy Policy
                         </a>
                     </p>
@@ -235,26 +229,6 @@ export default function Login() {
             </div>
 
             <style>{`
-                @keyframes blob {
-                    0%, 100% {
-                        transform: translate(0, 0) scale(1);
-                    }
-                    33% {
-                        transform: translate(30px, -50px) scale(1.1);
-                    }
-                    66% {
-                        transform: translate(-20px, 20px) scale(0.9);
-                    }
-                }
-                .animate-blob {
-                    animation: blob 7s infinite;
-                }
-                .animation-delay-2000 {
-                    animation-delay: 2s;
-                }
-                .animation-delay-4000 {
-                    animation-delay: 4s;
-                }
                 @keyframes shake {
                     0%, 100% { transform: translateX(0); }
                     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
