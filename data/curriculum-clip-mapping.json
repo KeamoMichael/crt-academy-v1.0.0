@@ -1,0 +1,270 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "sourceFile": "Written lectures CRT unlocked.pdf",
+    "lastUpdated": "2025-01-23",
+    "description": "Complete mapping of CRT Academy curriculum to visual clips with source references"
+  },
+  "courses": [
+    {
+      "courseId": "L1",
+      "title": "Level 1: The Architect",
+      "allowedTimeframes": ["1H", "4H", "1D"],
+      "modules": [
+        {
+          "moduleId": "M1",
+          "title": "Philosophy & Psychology",
+          "lessons": [
+            {
+              "lessonId": "l1-m1-2",
+              "title": "Fractal Anatomy",
+              "clips": [
+                {
+                  "clipId": "c1-m1-demo-1",
+                  "purpose": "demo",
+                  "sourcePage": "Section 1 - What is CRT",
+                  "description": "Every candle is a range - basic demonstration",
+                  "timeframe": "1D",
+                  "pattern": "three-candles",
+                  "interactionPolicy": {
+                    "maxAttempts": 0,
+                    "allowRewind": true,
+                    "showHints": true,
+                    "heartsCost": 0
+                  }
+                },
+                {
+                  "clipId": "c1-m1-practice-1",
+                  "purpose": "practice",
+                  "sourcePage": "Section 1 - Candle Anatomy",
+                  "description": "Draw the candle range - interactive drill",
+                  "timeframe": "4H",
+                  "pattern": "ranging",
+                  "interactionPolicy": {
+                    "maxAttempts": 3,
+                    "allowRewind": true,
+                    "showHints": true,
+                    "heartsCost": 0
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "L2",
+      "title": "Level 2: The Range",
+      "allowedTimeframes": ["1H", "4H", "1D", "1W"],
+      "modules": [
+        {
+          "moduleId": "M3",
+          "title": "Range Mechanics",
+          "lessons": [
+            {
+              "lessonId": "l2-m3-1",
+              "title": "The PD Array",
+              "clips": [
+                {
+                  "clipId": "c2-m3-demo-1",
+                  "purpose": "demo",
+                  "sourcePage": "Model #1 slide",
+                  "description": "Premium, Discount, and Equilibrium demonstration",
+                  "timeframe": "1D",
+                  "pattern": "ranging"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "moduleId": "M2.4b",
+          "title": "Valid vs. Invalid CRT",
+          "lessons": [
+            {
+              "lessonId": "l2-m24b-1",
+              "title": "Valid CRT Rules",
+              "clips": [
+                {
+                  "clipId": "c2-valid-demo-1",
+                  "purpose": "demo",
+                  "sourcePage": "1C) Types of CRT",
+                  "description": "Valid CRT structure demonstration",
+                  "timeframe": "1D",
+                  "pattern": "turtle-soup"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "L3",
+      "title": "Level 3: The Sequence",
+      "allowedTimeframes": ["15m", "1H", "4H", "1D", "1W"],
+      "modules": [
+        {
+          "moduleId": "M2.7",
+          "title": "Multi-Timeframe Models",
+          "lessons": [
+            {
+              "lessonId": "l3-m27-1",
+              "title": "The 5 Alignment Models",
+              "clips": [
+                {
+                  "clipId": "c3-m27-demo-1",
+                  "purpose": "demo",
+                  "sourcePage": "1D) Secrets of the three candles",
+                  "description": "Three candle model demonstration - Accumulation, Manipulation, Distribution",
+                  "timeframe": "1D",
+                  "pattern": "three-candles"
+                },
+                {
+                  "clipId": "c3-m27-practice-1",
+                  "purpose": "practice",
+                  "sourcePage": "Three candles examples",
+                  "description": "Fractal Peeler - identify candle structure across timeframes",
+                  "timeframe": "1H",
+                  "pattern": "three-candles"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "moduleId": "M4",
+          "title": "TSQ: The Sequence",
+          "lessons": [
+            {
+              "lessonId": "l3-m4-1",
+              "title": "The 4-Step Waltz",
+              "clips": [
+                {
+                  "clipId": "c3-tsq-demo-1",
+                  "purpose": "demo",
+                  "sourcePage": "Secrets of the three candles examples",
+                  "description": "Accumulation, Manipulation, Distribution sequence",
+                  "timeframe": "1D",
+                  "pattern": "three-candles"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "L4",
+      "title": "Level 4: The Hunter",
+      "allowedTimeframes": ["5m", "15m", "1H", "4H", "1D"],
+      "modules": [
+        {
+          "moduleId": "M6",
+          "title": "Turtle Soup Mechanics",
+          "lessons": [
+            {
+              "lessonId": "l4-m6-1",
+              "title": "The Purge (Sweep)",
+              "clips": [
+                {
+                  "clipId": "c4-ts-demo-1",
+                  "purpose": "demo",
+                  "sourcePage": "Turtle Soup examples",
+                  "description": "Turtle Soup pattern demonstration",
+                  "timeframe": "1D",
+                  "pattern": "turtle-soup"
+                }
+              ]
+            },
+            {
+              "lessonId": "l4-m6-2",
+              "title": "The Entry & Stop",
+              "clips": [
+                {
+                  "clipId": "c4-entry-demo-1",
+                  "purpose": "demo",
+                  "sourcePage": "1D) Secrets of the three candles, CRT entry models",
+                  "description": "Model #1 entry demonstration - Daily timeframe",
+                  "timeframe": "1D",
+                  "pattern": "model-1"
+                },
+                {
+                  "clipId": "c4-entry-assessment-1",
+                  "purpose": "assessment",
+                  "sourcePage": "Model #1 execution examples",
+                  "description": "Entry Execution Drill - place entry, SL, TP with pot protection",
+                  "timeframe": "1H",
+                  "pattern": "model-1",
+                  "replaySeed": 54321,
+                  "gradingTolerances": {
+                    "priceTolerance": 0.5,
+                    "timeTolerance": 1
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "courseId": "L5",
+      "title": "Level 5: Mastery",
+      "allowedTimeframes": ["1m", "3m", "5m", "15m", "30m", "1H", "2H", "4H", "1D", "1W", "1M"],
+      "modules": [
+        {
+          "moduleId": "M7",
+          "title": "The Gauntlet",
+          "lessons": [
+            {
+              "lessonId": "l5-m7-1",
+              "title": "Final Certification",
+              "clips": [
+                {
+                  "clipId": "c5-final-exam",
+                  "purpose": "assessment",
+                  "sourcePage": "Multiple - comprehensive exam",
+                  "description": "Final mastery exam with seeded clips",
+                  "timeframe": "1D",
+                  "pattern": "mixed",
+                  "replaySeed": 99999
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "examTemplates": [
+    {
+      "examId": "exam-l1",
+      "courseId": "L1",
+      "title": "Level 1 Exit Exam",
+      "clips": [
+        {
+          "clipId": "exam-l1-clip-1",
+          "sourcePage": "Section 1 - Time and Risk",
+          "timeframe": "1D",
+          "replaySeed": 11111
+        }
+      ]
+    },
+    {
+      "examId": "exam-l4",
+      "courseId": "L4",
+      "title": "Level 4 Exit Exam",
+      "clips": [
+        {
+          "clipId": "exam-l4-clip-1",
+          "sourcePage": "Turtle Soup examples",
+          "timeframe": "1D",
+          "replaySeed": 44444
+        }
+      ]
+    }
+  ]
+}
+
